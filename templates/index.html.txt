@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>충남 월간 수온정보</title>
+    <title>충청남도 수산정보 월간 보고서</title>
     <style>
         * {
             margin: 0;
