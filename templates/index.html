@@ -133,6 +133,13 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        input[type="password"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+        }
         button {
             padding: 10px 25px;
             background: #3498db;
@@ -150,6 +157,9 @@
             color: #7f8c8d;
             font-size: 12px;
             margin-top: 10px;
+        }
+        .hidden {
+            display: none;
         }
         @media (max-width: 768px) {
             .main-content {
@@ -199,8 +209,9 @@
         <!-- 업로드 섹션 -->
         <div class="upload-section">
             <h3>🚀 새 파일 업로드</h3>
-            <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-form">
+            <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-form" onsubmit="return checkPassword(event)">
                 <input type="file" name="file" accept=".pdf" required>
+                <input type="password" id="passwordInput" placeholder="비밀번호 입력" required>
                 <button type="submit">📤 업로드</button>
             </form>
             <p class="info-text">💡 PDF 파일만 업로드 가능합니다 (최대 100MB)</p>
@@ -208,6 +219,21 @@
     </div>
     
     <script>
+        // 비밀번호
+        const UPLOAD_PASSWORD = "7005425";
+
+        function checkPassword(event) {
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password !== UPLOAD_PASSWORD) {
+                event.preventDefault();
+                alert('❌ 비밀번호가 틀렸습니다!');
+                return false;
+            }
+            
+            return true;
+        }
+
         function viewPDF(filename) {
             const pdfViewer = document.querySelector('.pdf-viewer');
             const googleDocsUrl = 'https://docs.google.com/gview?url=https://monthly-report-ez5i.onrender.com/uploads/' + encodeURIComponent(filename) + '&embedded=true';
