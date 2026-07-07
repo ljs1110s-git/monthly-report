@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>충남 월간 수온정보</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        h2 {
+            color: #34495e;
+            font-size: 18px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .file-list {
+            list-style: none;
+        }
+        .file-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .file-item:hover {
+            background: #e8f4f8;
+            transform: translateX(5px);
+        }
+        .file-item a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .file-item a:hover {
+            text-decoration: underline;
+        }
+        .empty-message {
+            color: #95a5a6;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+        .upload-section {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 2px dashed #3498db;
+        }
+        .upload-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .upload-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        input[type="file"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button {
+            padding: 10px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .info-text {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 월간 수온정보</h1>
+        <p class="subtitle">충청남도 수산자원연구소</p>
+        
+        <h2>📄 최신 자료</h2>
+        <ul class="file-list">
+            {% if files %}
+                {% for file in files %}
+                <li class="file-item">
+                    📄 <a href="/uploads/{{ file }}" download>{{ file }}</a>
+                </li>
+                {% endfor %}
+            {% else %}
+            <p class="empty-message">📭 업로드된 자료가 없습니다</p>
+            {% endif %}
+        </ul>
+        
+        <div class="upload-section">
+            <h3>🚀 새 파일 업로드</h3>
+            <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-form">
+                <input type="file" name="file" accept=".pdf" required>
+                <button type="submit">📤 업로드</button>
+            </form>
+            <p class="info-text">💡 PDF 파일만 업로드 가능합니다 (최대 100MB)</p>
+        </div>
+    </div>
+</body>
+</html>
