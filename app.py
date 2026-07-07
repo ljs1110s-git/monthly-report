@@ -17,7 +17,8 @@ def index():
             if f.endswith('.pdf')
         ], reverse=True)
     
-    return render_template('index.html', files=files)
+    latest_file = files[0] if files else None
+    return render_template('index.html', files=files, latest_file=latest_file)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
