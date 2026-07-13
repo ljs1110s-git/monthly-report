@@ -145,12 +145,80 @@
       min-height: 680px;
     }
 
+    .viewer {
+      padding: 18px;
+      overflow-x: auto;
+    }
+
+    .pdf-page {
+      display: block;
+      width: 100%;
+      max-width: 960px;
+      height: auto;
+      margin: 0 auto 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: 0 10px 24px rgba(20, 31, 52, .08);
+    }
+
+    .pdf-page:last-child {
+      margin-bottom: 0;
+    }
+
     .viewer iframe {
       display: block;
       width: 100%;
       height: 680px;
       border: 0;
       background: #fff;
+    }
+
+    .viewer-message {
+      min-height: 680px;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .viewer-toolbar {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .viewer-toolbar.is-visible {
+      display: flex;
+    }
+
+    .viewer-button {
+      min-width: 34px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 0 10px;
+    }
+
+    .viewer-button:hover {
+      background: var(--primary-soft);
+      border-color: #bdd2ff;
+    }
+
+    .zoom-label {
+      min-width: 48px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
     }
 
     .empty-viewer {
@@ -351,7 +419,10 @@
       .page { width: min(100% - 24px, 1180px); padding-top: 18px; }
       .topbar { align-items: flex-start; flex-direction: column; }
       .layout { grid-template-columns: 1fr; }
-      .viewer, .viewer iframe, .empty-viewer { min-height: 520px; height: 520px; }
+      .viewer { min-height: 520px; padding: 10px; }
+      .empty-viewer, .viewer-message { min-height: 520px; }
+      .panel-header { align-items: flex-start; flex-wrap: wrap; }
+      .viewer-toolbar { width: 100%; justify-content: flex-start; margin-left: 0; }
       .file-name { max-width: 230px; }
     }
   </style>
@@ -363,7 +434,7 @@
         <div class="brand-mark">문서</div>
         <div>
           <h1>충청남도 수산정보 월간 보고서</h1>
-          <p class="subtitle">수산정보 월간 보고서를 확인하고 관리합니다.</p>
+          <p class="subtitle">월간 수산정보 보고서를 확인할 수 있습니다.</p>
         </div>
       </div>
       <div class="status-pill"><span class="status-dot"></span><span id="documentCount">문서 0건</span></div>
@@ -375,6 +446,11 @@
           <div>
             <h2 class="panel-title">보고서 미리보기</h2>
             <div class="file-name" id="currentFileName">선택된 보고서가 없습니다</div>
+          </div>
+          <div class="viewer-toolbar" id="viewerToolbar">
+            <button class="viewer-button" type="button" id="zoomOutButton">축소</button>
+            <span class="zoom-label" id="zoomLabel">100%</span>
+            <button class="viewer-button" type="button" id="zoomInButton">확대</button>
           </div>
           <a class="open-link" id="openLink" href="#" target="_blank" rel="noopener">새 창에서 열기</a>
         </div>
@@ -423,6 +499,24 @@
     const UPLOAD_PASSWORD = "7005425";
     const reportFile = document.getElementById("reportFile");
     const selectedFileName = document.getElementById("selectedFileName");
+    const zoomInButton = document.getElementById("zoomInButton");
+    const zoomOutButton = document.getElementById("zoomOutButton");
+    const zoomLabel = document.getElementById("zoomLabel");
+    const viewerToolbar = document.getElementById("viewerToolbar");
+    let activeFilename = "";
+    let zoomScale = 1;
+    let renderToken = 0;
+    let pdfjsLib = null;
+
+    const pdfJsReady = import("https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs")
+      .then(function (module) {
+        pdfjsLib = module;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
+        return pdfjsLib;
+      })
+      .catch(function () {
+        return null;
+      });
 
     if (reportFile && selectedFileName) {
       reportFile.addEventListener("change", function () {
@@ -444,14 +538,20 @@
       return "/uploads/" + encodeURIComponent(filename);
     }
 
+    function updateZoomLabel() {
+      zoomLabel.textContent = Math.round(zoomScale * 100) + "%";
+    }
+
     function showEmptyViewer() {
       const documentViewer = document.getElementById("documentViewer");
       const currentFileName = document.getElementById("currentFileName");
       const openLink = document.getElementById("openLink");
 
+      activeFilename = "";
       currentFileName.textContent = "선택된 보고서가 없습니다";
       openLink.classList.remove("is-visible");
       openLink.removeAttribute("href");
+      viewerToolbar.classList.remove("is-visible");
       documentViewer.innerHTML =
         '<div class="empty-viewer">' +
         '<div class="empty-card">' +
@@ -462,17 +562,86 @@
         '</div>';
     }
 
-    function viewDocument(filename) {
+    function showViewerMessage(message) {
+      const documentViewer = document.getElementById("documentViewer");
+      documentViewer.innerHTML =
+        '<div class="viewer-message">' +
+        '<div class="empty-card">' +
+        '<strong>' + message + '</strong>' +
+        '</div>' +
+        '</div>';
+    }
+
+    async function renderDocument(filename) {
       const localUrl = makeFileUrl(filename);
       const documentViewer = document.getElementById("documentViewer");
+      const token = ++renderToken;
+
+      showViewerMessage("보고서를 불러오는 중입니다.");
+
+      try {
+        const pdfLibrary = await pdfJsReady;
+        if (!pdfLibrary) {
+          documentViewer.innerHTML = '<iframe title="보고서 미리보기" src="' + localUrl + '"></iframe>';
+          return;
+        }
+
+        const loadingTask = pdfLibrary.getDocument(localUrl);
+        const pdf = await loadingTask.promise;
+
+        if (token !== renderToken) return;
+        documentViewer.innerHTML = "";
+
+        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+          if (token !== renderToken) return;
+
+          const page = await pdf.getPage(pageNumber);
+          const baseViewport = page.getViewport({ scale: 1 });
+          const availableWidth = Math.max(documentViewer.clientWidth - 36, 280);
+          const fitScale = availableWidth / baseViewport.width;
+          const viewport = page.getViewport({ scale: fitScale * zoomScale });
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          canvas.className = "pdf-page";
+          canvas.width = Math.floor(viewport.width);
+          canvas.height = Math.floor(viewport.height);
+          canvas.style.maxWidth = Math.floor(viewport.width) + "px";
+
+          documentViewer.appendChild(canvas);
+          await page.render({ canvasContext: context, viewport: viewport }).promise;
+        }
+      } catch (error) {
+        showViewerMessage("미리보기를 불러오지 못했습니다. 새 창에서 열기를 이용해 주세요.");
+      }
+    }
+
+    function viewDocument(filename) {
+      const localUrl = makeFileUrl(filename);
       const currentFileName = document.getElementById("currentFileName");
       const openLink = document.getElementById("openLink");
 
-      documentViewer.innerHTML = '<iframe title="보고서 미리보기" src="' + localUrl + '"></iframe>';
+      activeFilename = filename;
       currentFileName.textContent = filename;
       openLink.href = localUrl;
       openLink.classList.add("is-visible");
+      viewerToolbar.classList.add("is-visible");
+      renderDocument(filename);
     }
+
+    zoomOutButton.addEventListener("click", function () {
+      if (!activeFilename) return;
+      zoomScale = Math.max(0.6, Math.round((zoomScale - 0.1) * 10) / 10);
+      updateZoomLabel();
+      renderDocument(activeFilename);
+    });
+
+    zoomInButton.addEventListener("click", function () {
+      if (!activeFilename) return;
+      zoomScale = Math.min(2.4, Math.round((zoomScale + 0.1) * 10) / 10);
+      updateZoomLabel();
+      renderDocument(activeFilename);
+    });
 
     function renderFileList(files) {
       const list = document.getElementById("fileList");
