@@ -504,7 +504,7 @@
     const zoomLabel = document.getElementById("zoomLabel");
     const viewerToolbar = document.getElementById("viewerToolbar");
     let activeFilename = "";
-    let zoomScale = 1;
+    let zoomScale = window.matchMedia("(max-width: 860px)").matches ? 1.7 : 1;
     let renderToken = 0;
     let pdfjsLib = null;
 
@@ -541,6 +541,8 @@
     function updateZoomLabel() {
       zoomLabel.textContent = Math.round(zoomScale * 100) + "%";
     }
+
+    updateZoomLabel();
 
     function showEmptyViewer() {
       const documentViewer = document.getElementById("documentViewer");
