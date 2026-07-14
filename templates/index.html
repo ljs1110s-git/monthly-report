@@ -5,444 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>충청남도 월간 수온정보</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
-      background: linear-gradient(135deg, #f0f7ff 0%, #f9fbff 100%);
-      color: #0c3c73;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: white;
-      border-bottom: 2px solid #bfdbfe;
-      box-shadow: 0 1px 3px rgba(30, 90, 165, 0.08);
-    }
-
-    .topbar__inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand__mark {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #1e5aa5 0%, #0c3c73 100%);
-      color: white;
-      font-weight: 700;
-      font-size: 20px;
-    }
-
-    .brand__text h1 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: #0c3c73;
-    }
-
-    .brand__text p {
-      margin: 2px 0 0;
-      font-size: 12px;
-      color: #1e5aa5;
-    }
-
-    .emergency-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 18px;
-      background: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .emergency-btn:hover {
-      background: #b91c1c;
-    }
-
-    main {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 32px 20px;
-    }
-
-    .hero {
-      background: white;
-      border: 2px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 32px;
-      margin-bottom: 32px;
-      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
-    }
-
-    .hero__label {
-      font-size: 12px;
-      color: #1e5aa5;
-      margin: 0 0 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 700;
-    }
-
-    h2 {
-      font-size: 24px;
-      font-weight: 600;
-      color: #0c3c73;
-      margin: 0 0 12px;
-      line-height: 1.3;
-    }
-
-    .hero__description {
-      font-size: 16px;
-      color: #1e5aa5;
-      margin: 0 0 16px;
-    }
-
-    .alert-box {
-      background: #fff1f2;
-      border: 2px solid #fed7d7;
-      border-left: 4px solid #dc2626;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 16px;
-    }
-
-    .alert-box strong {
-      display: block;
-      color: #7f1d1d;
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .alert-box p {
-      color: #7f1d1d;
-      margin: 0;
-      font-size: 14px;
-    }
-
-    .search-panel {
-      background: white;
-      border: 2px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 32px;
-      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
-    }
-
-    .search-panel label {
-      display: block;
-      font-size: 16px;
-      font-weight: 700;
-      color: #0c3c73;
-      margin-bottom: 12px;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    input[type="search"],
-    input[type="password"],
-    input[type="file"] {
-      flex: 1;
-      min-width: 200px;
-      padding: 12px 14px;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #0c3c73;
-      background: white;
-      transition: border-color 0.2s;
-    }
-
-    input[type="search"]:focus,
-    input[type="password"]:focus,
-    input[type="file"]:focus {
-      outline: none;
-      border-color: #1e5aa5;
-      box-shadow: 0 0 0 3px rgba(30, 90, 165, 0.1);
-    }
-
-    input::placeholder {
-      color: #60a5fa;
-    }
-
-    button {
-      padding: 12px 18px;
-      background: #1e5aa5;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-      font-family: inherit;
-    }
-
-    button:hover {
-      background: #0c3c73;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    .search-results {
-      margin-top: 12px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .result-card {
-      background: #f0f7ff;
-      border: 1px solid #bfdbfe;
-      border-left: 4px solid #1e5aa5;
-      border-radius: 8px;
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .result-card:hover {
-      background: #e0ecff;
-      border-left-color: #0c3c73;
-    }
-
-    .result-card strong {
-      display: block;
-      color: #0c3c73;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .result-card span {
-      font-size: 13px;
-      color: #1e5aa5;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 32px 0 20px;
-      gap: 12px;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .pdf-card {
-      background: white;
-      border: 2px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 1px 3px rgba(30, 90, 165, 0.08);
-    }
-
-    .pdf-card:hover {
-      border-color: #1e5aa5;
-      box-shadow: 0 4px 12px rgba(30, 90, 165, 0.15);
-      transform: translateY(-2px);
-    }
-
-    .pdf-card strong {
-      display: block;
-      color: #0c3c73;
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      word-break: break-word;
-    }
-
-    .pdf-card span {
-      display: block;
-      font-size: 13px;
-      color: #1e5aa5;
-    }
-
-    .viewer-section {
-      background: white;
-      border: 2px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 32px;
-      min-height: 600px;
-      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
-    }
-
-    .viewer-section h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #0c3c73;
-      margin-bottom: 16px;
-    }
-
-    #pdfViewer {
-      width: 100%;
-      height: 550px;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      background: #f0f7ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #1e5aa5;
-      font-size: 16px;
-    }
-
-    .upload-section {
-      background: linear-gradient(135deg, #f0f7ff 0%, #e0ecff 100%);
-      border: 2px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 32px;
-      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
-    }
-
-    .upload-section h3 {
-      font-size: 18px;
-      font-weight: 700;
-      color: #0c3c73;
-      margin-bottom: 16px;
-    }
-
-    .upload-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .form-row input {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .form-row button {
-      padding: 12px 24px;
-      min-width: 120px;
-    }
-
-    .info-text {
-      font-size: 12px;
-      color: #1e5aa5;
-      margin-top: 10px;
-      font-weight: 500;
-    }
-
-    .notice {
-      background: white;
-      border: 2px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 24px;
-      color: #0c3c73;
-    }
-
-    .notice h3 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .notice p {
-      font-size: 14px;
-      margin: 8px 0;
-      line-height: 1.6;
-    }
-
-    .empty-message {
-      text-align: center;
-      padding: 40px 20px;
-      color: #1e5aa5;
-      font-size: 16px;
-    }
-
-    @media (max-width: 768px) {
-      .topbar__inner {
-        flex-direction: column;
-      }
-
-      .emergency-btn {
-        width: 100%;
-      }
-
-      main {
-        padding: 20px 16px;
-      }
-
-      .hero {
-        padding: 20px;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
-
-      .card-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .viewer-section {
-        min-height: auto;
-      }
-
-      #pdfViewer {
-        height: 400px;
-      }
-
-      .upload-section {
-        padding: 16px;
-      }
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; background: linear-gradient(135deg, #f0f7ff 0%, #f9fbff 100%); color: #0c3c73; line-height: 1.6; min-height: 100vh; }
+    .topbar { position: sticky; top: 0; z-index: 100; background: white; border-bottom: 2px solid #bfdbfe; box-shadow: 0 1px 3px rgba(30, 90, 165, 0.08); }
+    .topbar__inner { max-width: 1120px; margin: 0 auto; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand__mark { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #1e5aa5 0%, #0c3c73 100%); color: white; font-weight: 700; font-size: 20px; }
+    .brand__text h1 { margin: 0; font-size: 18px; font-weight: 600; color: #0c3c73; }
+    .brand__text p { margin: 2px 0 0; font-size: 12px; color: #1e5aa5; }
+    .emergency-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; white-space: nowrap; }
+    .emergency-btn:hover { background: #b91c1c; }
+    main { max-width: 1120px; margin: 0 auto; padding: 32px 20px; }
+    .hero { background: white; border: 2px solid #bfdbfe; border-radius: 12px; padding: 32px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08); }
+    .hero__label { font-size: 12px; color: #1e5aa5; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+    h2 { font-size: 24px; font-weight: 600; color: #0c3c73; margin: 0 0 12px; line-height: 1.3; }
+    .hero__description { font-size: 16px; color: #1e5aa5; margin: 0 0 16px; }
+    .alert-box { background: #fff1f2; border: 2px solid #fed7d7; border-left: 4px solid #dc2626; border-radius: 8px; padding: 16px; margin-top: 16px; }
+    .alert-box strong { display: block; color: #7f1d1d; margin-bottom: 6px; font-weight: 700; }
+    .alert-box p { color: #7f1d1d; margin: 0; font-size: 14px; }
+    .viewer-section { background: white; border: 2px solid #bfdbfe; border-radius: 12px; padding: 20px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08); }
+    .viewer-section h3 { font-size: 16px; font-weight: 600; color: #0c3c73; margin-bottom: 16px; }
+    #pdfViewer { width: 100%; height: 600px; border: 1px solid #bfdbfe; border-radius: 8px; background: #f0f7ff; }
+    #pdfViewer iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin: 32px 0 20px; gap: 12px; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .pdf-card { background: white; border: 2px solid #bfdbfe; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(30, 90, 165, 0.08); }
+    .pdf-card:hover { border-color: #1e5aa5; box-shadow: 0 4px 12px rgba(30, 90, 165, 0.15); transform: translateY(-2px); }
+    .pdf-card strong { display: block; color: #0c3c73; font-size: 16px; font-weight: 600; margin-bottom: 8px; word-break: break-word; }
+    .pdf-card span { display: block; font-size: 13px; color: #1e5aa5; }
+    .upload-section { background: linear-gradient(135deg, #f0f7ff 0%, #e0ecff 100%); border: 2px solid #bfdbfe; border-radius: 12px; padding: 24px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08); }
+    .upload-section h3 { font-size: 18px; font-weight: 700; color: #0c3c73; margin-bottom: 16px; }
+    .upload-form { display: flex; flex-direction: column; gap: 12px; }
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .form-row input { flex: 1; min-width: 200px; padding: 12px 14px; border: 1px solid #bfdbfe; border-radius: 8px; font-size: 14px; font-family: inherit; color: #0c3c73; background: white; }
+    .form-row input:focus { outline: none; border-color: #1e5aa5; box-shadow: 0 0 0 3px rgba(30, 90, 165, 0.1); }
+    .form-row button { padding: 12px 24px; min-width: 120px; background: #1e5aa5; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; font-family: inherit; }
+    .form-row button:hover { background: #0c3c73; }
+    .info-text { font-size: 12px; color: #1e5aa5; margin-top: 10px; font-weight: 500; }
+    .notice { background: white; border: 2px solid #bfdbfe; border-radius: 12px; padding: 24px; color: #0c3c73; }
+    .notice h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+    .notice p { font-size: 14px; margin: 8px 0; line-height: 1.6; }
+    .empty-message { text-align: center; padding: 40px 20px; color: #1e5aa5; font-size: 16px; }
+    @media (max-width: 768px) { .topbar__inner { flex-direction: column; } .emergency-btn { width: 100%; } main { padding: 20px 16px; } .hero { padding: 20px; } h2 { font-size: 20px; } .card-grid { grid-template-columns: 1fr; } #pdfViewer { height: 400px; } .upload-section { padding: 16px; } }
   </style>
 </head>
 <body>
@@ -458,7 +63,6 @@
       <a class="emergency-btn" href="tel:122">긴급신고 122/119</a>
     </div>
   </header>
-
   <main>
     <section class="hero">
       <p class="hero__label">선박 운항 안전정보</p>
@@ -469,30 +73,33 @@
         <p>선박 침수, 화재, 기관 정지 등 위급상황 발생 시 즉시 해양경찰 122 또는 119에 신고하세요.</p>
       </div>
     </section>
-
-    <section class="search-panel">
-      <label for="searchInput">자료 검색</label>
-      <div class="search-row">
-        <input id="searchInput" type="search" placeholder="파일명 검색 (예: 2024년 7월)" />
-        <button type="button" id="clearSearch">초기화</button>
-      </div>
-      <div id="searchResults" class="search-results"></div>
-    </section>
-
     <section class="viewer-section">
       <h3>📄 현재 보는 자료</h3>
       <div id="pdfViewer">
-        <span id="viewerMessage">최신 자료를 불러오는 중입니다...</span>
+        {% if latest_file %}
+          <iframe src="https://docs.google.com/gview?url=https://{{ request.host }}/uploads/{{ latest_file }}&embedded=true"></iframe>
+        {% else %}
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #1e5aa5;">📭 업로드된 자료가 없습니다</div>
+        {% endif %}
       </div>
     </section>
-
     <section>
       <div class="section-heading">
         <h2>📋 전체 자료</h2>
       </div>
-      <div id="fileGrid" class="card-grid"></div>
+      <div id="fileGrid" class="card-grid">
+        {% if files %}
+          {% for file in files %}
+          <div class="pdf-card" onclick="selectFile('{{ file }}')">
+            <strong>📄 {{ file }}</strong>
+            <span>클릭하여 보기</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-message">📭 업로드된 자료가 없습니다</div>
+        {% endif %}
+      </div>
     </section>
-
     <section class="upload-section">
       <h3>🚀 새 자료 업로드</h3>
       <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-form" onsubmit="return handleUpload(event)">
@@ -506,7 +113,6 @@
         <p class="info-text">💡 PDF 파일만 업로드 가능합니다 (최대 100MB)</p>
       </form>
     </section>
-
     <section class="notice">
       <h3>📌 이용 안내</h3>
       <p>본 사이트는 충청남도 관할 해역의 수온 정보를 제공하는 참고 자료입니다.</p>
@@ -514,121 +120,29 @@
       <p>위급상황 발생 시에는 본 자료 확인보다 즉시 해양경찰 122 또는 119에 신고하시기 바랍니다.</p>
     </section>
   </main>
-
   <script>
     const UPLOAD_PASSWORD = "7005425";
-
-    function loadFiles() {
-      const fileGrid = document.getElementById("fileGrid");
-      
-      fetch("/")
-        .then(response => response.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, "text/html");
-          const scripts = doc.querySelectorAll("script");
-          
-          let files = [];
-          for (let script of scripts) {
-            if (script.textContent.includes("latest_file")) {
-              const latestMatch = script.textContent.match(/latest_file\s*=\s*["']([^"']+)["']/);
-              const filesMatch = script.textContent.match(/files\s*=\s*(\[.*?\])/);
-              
-              if (latestMatch) {
-                const latestFile = latestMatch[1];
-                updateViewer(latestFile);
-              }
-              
-              if (filesMatch) {
-                try {
-                  files = JSON.parse(filesMatch[1]);
-                } catch (e) {
-                  console.error("파일 목록 파싱 실패:", e);
-                }
-              }
-              break;
-            }
-          }
-          
-          renderFiles(files);
-        })
-        .catch(err => {
-          console.error("파일 로드 실패:", err);
-          fileGrid.innerHTML = '<div class="empty-message">📭 파일을 불러올 수 없습니다</div>';
-        });
-    }
-
-    function renderFiles(files) {
-      const fileGrid = document.getElementById("fileGrid");
-      
-      if (!files || files.length === 0) {
-        fileGrid.innerHTML = '<div class="empty-message">📭 업로드된 자료가 없습니다</div>';
-        return;
-      }
-
-      fileGrid.innerHTML = files
-        .map(file => `
-          <div class="pdf-card" onclick="selectFile('${file}')">
-            <strong>📄 ${file}</strong>
-            <span>클릭하여 보기</span>
-          </div>
-        `)
-        .join("");
-    }
-
     function selectFile(filename) {
-      updateViewer(filename);
-    }
-
-    function updateViewer(filename) {
       const viewer = document.getElementById("pdfViewer");
-      const message = document.getElementById("viewerMessage");
-
-      if (!filename) {
-        viewer.style.display = "flex";
-        message.textContent = "📭 선택된 자료가 없습니다";
-        return;
-      }
-
-      const url = `/uploads/${encodeURIComponent(filename)}`;
-      viewer.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(window.location.origin + url)}&embedded=true" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>`;
+      const url = "https://{{ request.host }}/uploads/" + encodeURIComponent(filename);
+      viewer.innerHTML = '<iframe src="https://docs.google.com/gview?url=' + encodeURIComponent(url) + '&embedded=true"></iframe>';
     }
-
-    document.getElementById("searchInput").addEventListener("input", function(e) {
-      const query = e.target.value.toLowerCase();
-      const fileCards = document.querySelectorAll(".pdf-card");
-
-      fileCards.forEach(card => {
-        const filename = card.querySelector("strong").textContent.toLowerCase();
-        card.style.display = filename.includes(query) ? "block" : "none";
-      });
-    });
-
-    document.getElementById("clearSearch").addEventListener("click", function() {
-      document.getElementById("searchInput").value = "";
-      document.querySelectorAll(".pdf-card").forEach(card => {
-        card.style.display = "block";
-      });
-    });
-
     function handleUpload(event) {
       event.preventDefault();
       const password = document.getElementById("uploadPassword").value;
-
       if (password !== UPLOAD_PASSWORD) {
         alert("❌ 비밀번호가 틀렸습니다!");
+        document.getElementById("uploadPassword").value = "";
         return false;
       }
-
       const form = event.target;
       const formData = new FormData(form);
-
       fetch("/upload", {
         method: "POST",
         body: formData
       })
         .then(response => {
-          if (response.ok) {
+          if (response.ok || response.status === 302) {
             alert("✅ 파일 업로드 완료!");
             form.reset();
             setTimeout(() => {
@@ -643,11 +157,8 @@
         .catch(error => {
           alert("❌ 업로드 실패: " + error.message);
         });
-
       return false;
     }
-
-    document.addEventListener("DOMContentLoaded", loadFiles);
   </script>
 </body>
 </html>
