@@ -1,11 +1,10 @@
-from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, url_for
+from flask import Flask, render_template, request, send_from_directory, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 
 
 app = Flask(__name__)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
+app.config["UPLOAD_FOLDER"] = "uploads"
 app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
 ALLOWED_EXTENSIONS = {".pdf"}
 
@@ -16,25 +15,17 @@ def is_pdf(filename):
     return os.path.splitext(filename.lower())[1] in ALLOWED_EXTENSIONS
 
 
-def get_report_files():
-    if not os.path.exists(app.config["UPLOAD_FOLDER"]):
-        return []
-
-    return sorted(
-        [filename for filename in os.listdir(app.config["UPLOAD_FOLDER"]) if is_pdf(filename)],
-        reverse=True,
-    )
-
-
 @app.route("/")
 def index():
-    return render_template("index.html")
+    files = []
+    if os.path.exists(app.config["UPLOAD_FOLDER"]):
+        files = sorted(
+            [f for f in os.listdir(app.config["UPLOAD_FOLDER"]) if is_pdf(f)],
+            reverse=True,
+        )
 
-
-@app.route("/api/files")
-def files_api():
-    files = get_report_files()
-    return jsonify({"files": files})
+    latest_file = files[0] if files else None
+    return render_template("index.html", files=files, latest_file=latest_file)
 
 
 @app.route("/upload", methods=["POST"])

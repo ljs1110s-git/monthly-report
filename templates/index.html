@@ -3,701 +3,651 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>충청남도 수산정보 월간 보고서</title>
+  <title>충청남도 월간 수온정보</title>
   <style>
-    :root {
-      --bg: #f4f7fb;
-      --surface: #ffffff;
-      --surface-soft: #f8fafc;
-      --line: #d8e1ed;
-      --line-soft: #e8eef6;
-      --text: #172033;
-      --muted: #6b778c;
-      --primary: #1f5edb;
-      --primary-dark: #184bb0;
-      --primary-soft: #eaf1ff;
-      --success: #16803c;
-      --shadow: 0 18px 42px rgba(20, 31, 52, .09);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    * { box-sizing: border-box; }
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #f0f7ff 0%, #f9fbff 100%);
+      color: #0c3c73;
+      line-height: 1.6;
       min-height: 100vh;
-      font-family: "Malgun Gothic", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        linear-gradient(180deg, rgba(232, 239, 252, .82) 0%, rgba(244, 247, 251, 1) 280px),
-        var(--bg);
-    }
-
-    .page {
-      width: min(1180px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 28px 0 36px;
     }
 
     .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: white;
+      border-bottom: 2px solid #bfdbfe;
+      box-shadow: 0 1px 3px rgba(30, 90, 165, 0.08);
+    }
+
+    .topbar__inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 18px;
+      gap: 20px;
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      min-width: 0;
     }
 
-    .brand-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      background: var(--primary);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 900;
-      box-shadow: 0 10px 24px rgba(36, 99, 235, .22);
+    .brand__mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1e5aa5 0%, #0c3c73 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 20px;
     }
 
-    h1 {
+    .brand__text h1 {
       margin: 0;
-      font-size: 24px;
-      line-height: 1.25;
-      letter-spacing: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #0c3c73;
     }
 
-    .subtitle {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 13px;
+    .brand__text p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #1e5aa5;
     }
 
-    .status-pill {
+    .emergency-btn {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 8px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, .92);
-      color: var(--muted);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-header {
-      min-height: 58px;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--line-soft);
-      background: var(--surface-soft);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .panel-title {
-      margin: 0;
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .file-name {
-      color: var(--muted);
-      font-size: 12px;
-      max-width: 420px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .viewer {
-      background: #eef2f7;
-      min-height: 680px;
-    }
-
-    .viewer {
-      padding: 18px;
-      overflow-x: auto;
-    }
-
-    .pdf-page {
-      display: block;
-      width: 100%;
-      max-width: 960px;
-      height: auto;
-      margin: 0 auto 16px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      box-shadow: 0 10px 24px rgba(20, 31, 52, .08);
-    }
-
-    .pdf-page:last-child {
-      margin-bottom: 0;
-    }
-
-    .viewer iframe {
-      display: block;
-      width: 100%;
-      height: 680px;
-      border: 0;
-      background: #fff;
-    }
-
-    .viewer-message {
-      min-height: 680px;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .viewer-toolbar {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      margin-left: auto;
-    }
-
-    .viewer-toolbar.is-visible {
-      display: flex;
-    }
-
-    .viewer-button {
-      min-width: 34px;
-      height: 32px;
-      border: 1px solid var(--line);
+      justify-content: center;
+      padding: 10px 18px;
+      background: #dc2626;
+      color: white;
+      border: none;
       border-radius: 8px;
-      background: #fff;
-      color: var(--text);
-      cursor: pointer;
-      font: inherit;
-      font-size: 13px;
-      font-weight: 800;
-      padding: 0 10px;
-    }
-
-    .viewer-button:hover {
-      background: var(--primary-soft);
-      border-color: #bdd2ff;
-    }
-
-    .zoom-label {
-      min-width: 48px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .empty-viewer {
-      min-height: 680px;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .empty-card {
-      max-width: 360px;
-      padding: 28px;
-      border: 1px dashed #b7c3d3;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .78);
-    }
-
-    .empty-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 12px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: var(--primary-soft);
-      color: var(--primary);
-      font-weight: 900;
-    }
-
-    .side {
-      display: grid;
-      gap: 14px;
-    }
-
-    .file-list {
-      list-style: none;
-      margin: 0;
-      padding: 10px;
-      max-height: 420px;
-      overflow-y: auto;
-    }
-
-    .file-item + .file-item { margin-top: 8px; }
-
-    .file-link {
-      width: 100%;
-      border: 1px solid transparent;
-      border-radius: 9px;
-      background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      text-align: left;
-      transition: background .16s ease, border-color .16s ease;
-    }
-
-    .file-link:hover {
-      background: var(--primary-soft);
-      border-color: #bdd2ff;
-    }
-
-    .file-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      display: grid;
-      place-items: center;
-      background: #fee2e2;
-      color: #b91c1c;
-      font-size: 11px;
-      font-weight: 900;
-      flex: 0 0 auto;
-    }
-
-    .file-text {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 13px;
       font-weight: 700;
-    }
-
-    .empty-message {
-      color: var(--muted);
-      font-size: 13px;
-      padding: 22px;
-      text-align: center;
-    }
-
-    .upload-body {
-      padding: 16px;
-    }
-
-    .upload-form {
-      display: grid;
-      gap: 10px;
-    }
-
-    input[type="password"] {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-      color: var(--text);
-      padding: 10px 11px;
-      font: inherit;
-      font-size: 13px;
-    }
-
-    input[type="file"] {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-
-    input:focus {
-      outline: 2px solid rgba(36, 99, 235, .20);
-      border-color: var(--primary);
-    }
-
-    .file-picker {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      align-items: center;
-      gap: 10px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-      padding: 8px;
+      font-size: 14px;
       cursor: pointer;
-    }
-
-    .file-picker-button {
-      border-radius: 7px;
-      background: var(--primary-soft);
-      color: var(--primary-dark);
-      font-size: 13px;
-      font-weight: 800;
-      padding: 8px 10px;
-      white-space: nowrap;
-    }
-
-    .selected-file {
-      min-width: 0;
-      color: var(--muted);
-      font-size: 13px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .upload-button {
-      width: 100%;
-      border: 0;
-      border-radius: 8px;
-      background: var(--primary);
-      color: #fff;
-      cursor: pointer;
-      font-weight: 800;
-      padding: 11px 14px;
-      transition: background .16s ease;
-    }
-
-    .upload-button:hover { background: var(--primary-dark); }
-
-    .info-text {
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .open-link {
-      color: var(--primary);
-      display: none;
-      font-size: 12px;
-      font-weight: 800;
       text-decoration: none;
       white-space: nowrap;
     }
 
-    .open-link.is-visible { display: inline; }
+    .emergency-btn:hover {
+      background: #b91c1c;
+    }
 
-    .open-link:hover { text-decoration: underline; }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
 
-    @media (max-width: 860px) {
-      .page { width: min(100% - 24px, 1180px); padding-top: 18px; }
-      .topbar { align-items: flex-start; flex-direction: column; }
-      .layout { grid-template-columns: 1fr; }
-      .viewer { min-height: 520px; padding: 10px; }
-      .empty-viewer, .viewer-message { min-height: 520px; }
-      .panel-header { align-items: flex-start; flex-wrap: wrap; }
-      .viewer-toolbar { width: 100%; justify-content: flex-start; margin-left: 0; }
-      .file-name { max-width: 230px; }
+    .hero {
+      background: white;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
+    }
+
+    .hero__label {
+      font-size: 12px;
+      color: #1e5aa5;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #0c3c73;
+      margin: 0 0 12px;
+      line-height: 1.3;
+    }
+
+    .hero__description {
+      font-size: 16px;
+      color: #1e5aa5;
+      margin: 0 0 16px;
+    }
+
+    .alert-box {
+      background: #fff1f2;
+      border: 2px solid #fed7d7;
+      border-left: 4px solid #dc2626;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .alert-box strong {
+      display: block;
+      color: #7f1d1d;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .alert-box p {
+      color: #7f1d1d;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .search-panel {
+      background: white;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
+    }
+
+    .search-panel label {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0c3c73;
+      margin-bottom: 12px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    input[type="search"],
+    input[type="password"],
+    input[type="file"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 14px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #0c3c73;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    input[type="search"]:focus,
+    input[type="password"]:focus,
+    input[type="file"]:focus {
+      outline: none;
+      border-color: #1e5aa5;
+      box-shadow: 0 0 0 3px rgba(30, 90, 165, 0.1);
+    }
+
+    input::placeholder {
+      color: #60a5fa;
+    }
+
+    button {
+      padding: 12px 18px;
+      background: #1e5aa5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+
+    button:hover {
+      background: #0c3c73;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .search-results {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .result-card {
+      background: #f0f7ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #1e5aa5;
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .result-card:hover {
+      background: #e0ecff;
+      border-left-color: #0c3c73;
+    }
+
+    .result-card strong {
+      display: block;
+      color: #0c3c73;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .result-card span {
+      font-size: 13px;
+      color: #1e5aa5;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 32px 0 20px;
+      gap: 12px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .pdf-card {
+      background: white;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(30, 90, 165, 0.08);
+    }
+
+    .pdf-card:hover {
+      border-color: #1e5aa5;
+      box-shadow: 0 4px 12px rgba(30, 90, 165, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .pdf-card strong {
+      display: block;
+      color: #0c3c73;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .pdf-card span {
+      display: block;
+      font-size: 13px;
+      color: #1e5aa5;
+    }
+
+    .viewer-section {
+      background: white;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 32px;
+      min-height: 600px;
+      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
+    }
+
+    .viewer-section h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0c3c73;
+      margin-bottom: 16px;
+    }
+
+    #pdfViewer {
+      width: 100%;
+      height: 550px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #f0f7ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1e5aa5;
+      font-size: 16px;
+    }
+
+    .upload-section {
+      background: linear-gradient(135deg, #f0f7ff 0%, #e0ecff 100%);
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(30, 90, 165, 0.08);
+    }
+
+    .upload-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0c3c73;
+      margin-bottom: 16px;
+    }
+
+    .upload-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .form-row input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .form-row button {
+      padding: 12px 24px;
+      min-width: 120px;
+    }
+
+    .info-text {
+      font-size: 12px;
+      color: #1e5aa5;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .notice {
+      background: white;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 24px;
+      color: #0c3c73;
+    }
+
+    .notice h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .notice p {
+      font-size: 14px;
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: #1e5aa5;
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .topbar__inner {
+        flex-direction: column;
+      }
+
+      .emergency-btn {
+        width: 100%;
+      }
+
+      main {
+        padding: 20px 16px;
+      }
+
+      .hero {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .viewer-section {
+        min-height: auto;
+      }
+
+      #pdfViewer {
+        height: 400px;
+      }
+
+      .upload-section {
+        padding: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <header class="topbar">
+  <header class="topbar">
+    <div class="topbar__inner">
       <div class="brand">
-        <div class="brand-mark">문서</div>
-        <div>
-          <h1>충청남도 수산정보 월간 보고서</h1>
-          <p class="subtitle">월간 수산정보 보고서를 확인할 수 있습니다.</p>
+        <div class="brand__mark">船</div>
+        <div class="brand__text">
+          <h1>충청남도 월간 수온정보</h1>
+          <p>수온분석 및 향후전망</p>
         </div>
       </div>
-      <div class="status-pill"><span class="status-dot"></span><span id="documentCount">문서 0건</span></div>
-    </header>
+      <a class="emergency-btn" href="tel:122">긴급신고 122/119</a>
+    </div>
+  </header>
 
-    <section class="layout">
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2 class="panel-title">보고서 미리보기</h2>
-            <div class="file-name" id="currentFileName">선택된 보고서가 없습니다</div>
-          </div>
-          <div class="viewer-toolbar" id="viewerToolbar">
-            <button class="viewer-button" type="button" id="zoomOutButton">축소</button>
-            <span class="zoom-label" id="zoomLabel">100%</span>
-            <button class="viewer-button" type="button" id="zoomInButton">확대</button>
-          </div>
-          <a class="open-link" id="openLink" href="#" target="_blank" rel="noopener">새 창에서 열기</a>
+  <main>
+    <section class="hero">
+      <p class="hero__label">선박 운항 안전정보</p>
+      <h2>매월 업데이트되는 수온 정보를 확인하세요</h2>
+      <p class="hero__description">충청남도 관할 해역의 최신 수온 정보와 향후 전망을 제공합니다.</p>
+      <div class="alert-box">
+        <strong>긴급상황 시 안내</strong>
+        <p>선박 침수, 화재, 기관 정지 등 위급상황 발생 시 즉시 해양경찰 122 또는 119에 신고하세요.</p>
+      </div>
+    </section>
+
+    <section class="search-panel">
+      <label for="searchInput">자료 검색</label>
+      <div class="search-row">
+        <input id="searchInput" type="search" placeholder="파일명 검색 (예: 2024년 7월)" />
+        <button type="button" id="clearSearch">초기화</button>
+      </div>
+      <div id="searchResults" class="search-results"></div>
+    </section>
+
+    <section class="viewer-section">
+      <h3>📄 현재 보는 자료</h3>
+      <div id="pdfViewer">
+        <span id="viewerMessage">최신 자료를 불러오는 중입니다...</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <h2>📋 전체 자료</h2>
+      </div>
+      <div id="fileGrid" class="card-grid"></div>
+    </section>
+
+    <section class="upload-section">
+      <h3>🚀 새 자료 업로드</h3>
+      <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-form" onsubmit="return handleUpload(event)">
+        <div class="form-row">
+          <input type="file" name="file" accept=".pdf" required />
         </div>
-        <div class="viewer" id="documentViewer">
-          <div class="empty-viewer">
-            <div class="empty-card">
-              <div class="empty-icon">+</div>
-              <strong>아직 업로드된 문서가 없습니다.</strong>
-              <p class="info-text">오른쪽 영역에서 보고서 파일을 업로드해 주세요.</p>
-            </div>
-          </div>
+        <div class="form-row">
+          <input type="password" id="uploadPassword" placeholder="비밀번호 입력" required />
+          <button type="submit">📤 업로드</button>
         </div>
-      </article>
+        <p class="info-text">💡 PDF 파일만 업로드 가능합니다 (최대 100MB)</p>
+      </form>
+    </section>
 
-      <aside class="side">
-        <section class="panel">
-          <div class="panel-header">
-            <h2 class="panel-title">파일 목록</h2>
-          </div>
-          <ul class="file-list" id="fileList"></ul>
-          <p class="empty-message" id="emptyFileMessage">등록된 파일이 없습니다.</p>
-        </section>
-
-        <section class="panel">
-          <div class="panel-header">
-            <h2 class="panel-title">파일 업로드</h2>
-          </div>
-          <div class="upload-body">
-            <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-form" onsubmit="return checkAccess(event)">
-              <label class="file-picker" for="reportFile">
-                <span class="file-picker-button">파일 선택</span>
-                <span class="selected-file" id="selectedFileName">선택된 파일 없음</span>
-              </label>
-              <input type="file" id="reportFile" name="file" accept=".pdf" required>
-              <input type="password" id="passwordInput" placeholder="비밀번호" required>
-              <button class="upload-button" type="submit">업로드</button>
-            </form>
-            <p class="info-text">문서 파일만 업로드할 수 있습니다. 최대 100MB까지 지원합니다.</p>
-          </div>
-        </section>
-      </aside>
+    <section class="notice">
+      <h3>📌 이용 안내</h3>
+      <p>본 사이트는 충청남도 관할 해역의 수온 정보를 제공하는 참고 자료입니다.</p>
+      <p>정확한 운항 판단을 위해서는 기상청, 해양경찰청 등 공식 기관의 정보를 함께 참고하시기 바랍니다.</p>
+      <p>위급상황 발생 시에는 본 자료 확인보다 즉시 해양경찰 122 또는 119에 신고하시기 바랍니다.</p>
     </section>
   </main>
 
   <script>
     const UPLOAD_PASSWORD = "7005425";
-    const reportFile = document.getElementById("reportFile");
-    const selectedFileName = document.getElementById("selectedFileName");
-    const zoomInButton = document.getElementById("zoomInButton");
-    const zoomOutButton = document.getElementById("zoomOutButton");
-    const zoomLabel = document.getElementById("zoomLabel");
-    const viewerToolbar = document.getElementById("viewerToolbar");
-    let activeFilename = "";
-    let zoomScale = window.matchMedia("(max-width: 860px)").matches ? 1.7 : 1;
-    let renderToken = 0;
-    let pdfjsLib = null;
 
-    const pdfJsReady = import("https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs")
-      .then(function (module) {
-        pdfjsLib = module;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
-        return pdfjsLib;
-      })
-      .catch(function () {
-        return null;
-      });
-
-    if (reportFile && selectedFileName) {
-      reportFile.addEventListener("change", function () {
-        selectedFileName.textContent = this.files.length ? this.files[0].name : "선택된 파일 없음";
-      });
+    function loadFiles() {
+      const fileGrid = document.getElementById("fileGrid");
+      
+      fetch("/")
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, "text/html");
+          const scripts = doc.querySelectorAll("script");
+          
+          let files = [];
+          for (let script of scripts) {
+            if (script.textContent.includes("latest_file")) {
+              const latestMatch = script.textContent.match(/latest_file\s*=\s*["']([^"']+)["']/);
+              const filesMatch = script.textContent.match(/files\s*=\s*(\[.*?\])/);
+              
+              if (latestMatch) {
+                const latestFile = latestMatch[1];
+                updateViewer(latestFile);
+              }
+              
+              if (filesMatch) {
+                try {
+                  files = JSON.parse(filesMatch[1]);
+                } catch (e) {
+                  console.error("파일 목록 파싱 실패:", e);
+                }
+              }
+              break;
+            }
+          }
+          
+          renderFiles(files);
+        })
+        .catch(err => {
+          console.error("파일 로드 실패:", err);
+          fileGrid.innerHTML = '<div class="empty-message">📭 파일을 불러올 수 없습니다</div>';
+        });
     }
 
-    function checkAccess(event) {
-      const password = document.getElementById("passwordInput").value;
-      if (password !== UPLOAD_PASSWORD) {
-        event.preventDefault();
-        alert("비밀번호가 올바르지 않습니다.");
-        return false;
-      }
-      return true;
-    }
-
-    function makeFileUrl(filename) {
-      return "/uploads/" + encodeURIComponent(filename);
-    }
-
-    function updateZoomLabel() {
-      zoomLabel.textContent = Math.round(zoomScale * 100) + "%";
-    }
-
-    updateZoomLabel();
-
-    function showEmptyViewer() {
-      const documentViewer = document.getElementById("documentViewer");
-      const currentFileName = document.getElementById("currentFileName");
-      const openLink = document.getElementById("openLink");
-
-      activeFilename = "";
-      currentFileName.textContent = "선택된 보고서가 없습니다";
-      openLink.classList.remove("is-visible");
-      openLink.removeAttribute("href");
-      viewerToolbar.classList.remove("is-visible");
-      documentViewer.innerHTML =
-        '<div class="empty-viewer">' +
-        '<div class="empty-card">' +
-        '<div class="empty-icon">+</div>' +
-        '<strong>아직 업로드된 문서가 없습니다.</strong>' +
-        '<p class="info-text">오른쪽 영역에서 보고서 파일을 업로드해 주세요.</p>' +
-        '</div>' +
-        '</div>';
-    }
-
-    function showViewerMessage(message) {
-      const documentViewer = document.getElementById("documentViewer");
-      documentViewer.innerHTML =
-        '<div class="viewer-message">' +
-        '<div class="empty-card">' +
-        '<strong>' + message + '</strong>' +
-        '</div>' +
-        '</div>';
-    }
-
-    async function renderDocument(filename) {
-      const localUrl = makeFileUrl(filename);
-      const documentViewer = document.getElementById("documentViewer");
-      const token = ++renderToken;
-
-      showViewerMessage("보고서를 불러오는 중입니다.");
-
-      try {
-        const pdfLibrary = await pdfJsReady;
-        if (!pdfLibrary) {
-          documentViewer.innerHTML = '<iframe title="보고서 미리보기" src="' + localUrl + '"></iframe>';
-          return;
-        }
-
-        const loadingTask = pdfLibrary.getDocument(localUrl);
-        const pdf = await loadingTask.promise;
-
-        if (token !== renderToken) return;
-        documentViewer.innerHTML = "";
-
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          if (token !== renderToken) return;
-
-          const page = await pdf.getPage(pageNumber);
-          const baseViewport = page.getViewport({ scale: 1 });
-          const availableWidth = Math.max(documentViewer.clientWidth - 36, 280);
-          const fitScale = availableWidth / baseViewport.width;
-          const viewport = page.getViewport({ scale: fitScale * zoomScale });
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
-
-          canvas.className = "pdf-page";
-          canvas.width = Math.floor(viewport.width);
-          canvas.height = Math.floor(viewport.height);
-          canvas.style.maxWidth = Math.floor(viewport.width) + "px";
-
-          documentViewer.appendChild(canvas);
-          await page.render({ canvasContext: context, viewport: viewport }).promise;
-        }
-      } catch (error) {
-        showViewerMessage("미리보기를 불러오지 못했습니다. 새 창에서 열기를 이용해 주세요.");
-      }
-    }
-
-    function viewDocument(filename) {
-      const localUrl = makeFileUrl(filename);
-      const currentFileName = document.getElementById("currentFileName");
-      const openLink = document.getElementById("openLink");
-
-      activeFilename = filename;
-      currentFileName.textContent = filename;
-      openLink.href = localUrl;
-      openLink.classList.add("is-visible");
-      viewerToolbar.classList.add("is-visible");
-      renderDocument(filename);
-    }
-
-    zoomOutButton.addEventListener("click", function () {
-      if (!activeFilename) return;
-      zoomScale = Math.max(0.6, Math.round((zoomScale - 0.1) * 10) / 10);
-      updateZoomLabel();
-      renderDocument(activeFilename);
-    });
-
-    zoomInButton.addEventListener("click", function () {
-      if (!activeFilename) return;
-      zoomScale = Math.min(2.4, Math.round((zoomScale + 0.1) * 10) / 10);
-      updateZoomLabel();
-      renderDocument(activeFilename);
-    });
-
-    function renderFileList(files) {
-      const list = document.getElementById("fileList");
-      const emptyMessage = document.getElementById("emptyFileMessage");
-      const documentCount = document.getElementById("documentCount");
-
-      list.innerHTML = "";
-      documentCount.textContent = "문서 " + files.length + "건";
-
-      if (!files.length) {
-        emptyMessage.style.display = "block";
-        showEmptyViewer();
+    function renderFiles(files) {
+      const fileGrid = document.getElementById("fileGrid");
+      
+      if (!files || files.length === 0) {
+        fileGrid.innerHTML = '<div class="empty-message">📭 업로드된 자료가 없습니다</div>';
         return;
       }
 
-      emptyMessage.style.display = "none";
-      files.forEach(function (filename) {
-        const item = document.createElement("li");
-        const button = document.createElement("button");
-        const icon = document.createElement("span");
-        const text = document.createElement("span");
-
-        item.className = "file-item";
-        button.className = "file-link";
-        button.type = "button";
-        icon.className = "file-icon";
-        icon.textContent = "문서";
-        text.className = "file-text";
-        text.textContent = filename;
-
-        button.addEventListener("click", function () {
-          viewDocument(filename);
-        });
-
-        button.appendChild(icon);
-        button.appendChild(text);
-        item.appendChild(button);
-        list.appendChild(item);
-      });
-
-      viewDocument(files[0]);
+      fileGrid.innerHTML = files
+        .map(file => `
+          <div class="pdf-card" onclick="selectFile('${file}')">
+            <strong>📄 ${file}</strong>
+            <span>클릭하여 보기</span>
+          </div>
+        `)
+        .join("");
     }
 
-    fetch("/api/files")
-      .then(function (response) {
-        if (!response.ok) throw new Error("파일 목록을 불러오지 못했습니다.");
-        return response.json();
-      })
-      .then(function (data) {
-        renderFileList(data.files || []);
-      })
-      .catch(function () {
-        renderFileList([]);
+    function selectFile(filename) {
+      updateViewer(filename);
+    }
+
+    function updateViewer(filename) {
+      const viewer = document.getElementById("pdfViewer");
+      const message = document.getElementById("viewerMessage");
+
+      if (!filename) {
+        viewer.style.display = "flex";
+        message.textContent = "📭 선택된 자료가 없습니다";
+        return;
+      }
+
+      const url = `/uploads/${encodeURIComponent(filename)}`;
+      viewer.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(window.location.origin + url)}&embedded=true" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>`;
+    }
+
+    document.getElementById("searchInput").addEventListener("input", function(e) {
+      const query = e.target.value.toLowerCase();
+      const fileCards = document.querySelectorAll(".pdf-card");
+
+      fileCards.forEach(card => {
+        const filename = card.querySelector("strong").textContent.toLowerCase();
+        card.style.display = filename.includes(query) ? "block" : "none";
       });
+    });
+
+    document.getElementById("clearSearch").addEventListener("click", function() {
+      document.getElementById("searchInput").value = "";
+      document.querySelectorAll(".pdf-card").forEach(card => {
+        card.style.display = "block";
+      });
+    });
+
+    function handleUpload(event) {
+      event.preventDefault();
+      const password = document.getElementById("uploadPassword").value;
+
+      if (password !== UPLOAD_PASSWORD) {
+        alert("❌ 비밀번호가 틀렸습니다!");
+        return false;
+      }
+
+      const form = event.target;
+      const formData = new FormData(form);
+
+      fetch("/upload", {
+        method: "POST",
+        body: formData
+      })
+        .then(response => {
+          if (response.ok) {
+            alert("✅ 파일 업로드 완료!");
+            form.reset();
+            setTimeout(() => {
+              location.reload();
+            }, 500);
+          } else {
+            return response.text().then(text => {
+              throw new Error(text);
+            });
+          }
+        })
+        .catch(error => {
+          alert("❌ 업로드 실패: " + error.message);
+        });
+
+      return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", loadFiles);
   </script>
 </body>
 </html>
