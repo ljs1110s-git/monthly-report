@@ -7,6 +7,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
 app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
 ALLOWED_EXTENSIONS = {".pdf"}
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "7005425")
 
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
@@ -29,6 +30,16 @@ def unique_filename(filename):
         counter += 1
 
     return candidate
+
+
+def upload_path(filename):
+    clean_name = clean_filename(filename)
+    return os.path.abspath(os.path.join(app.config["UPLOAD_FOLDER"], clean_name))
+
+
+def is_safe_upload_path(path):
+    upload_root = os.path.abspath(app.config["UPLOAD_FOLDER"])
+    return os.path.commonpath([upload_root, path]) == upload_root
 
 
 def get_report_files():
@@ -74,6 +85,26 @@ def upload_file():
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], save_name))
 
     return redirect(url_for("index"))
+
+
+@app.route("/delete", methods=["POST"])
+def delete_file():
+    data = request.get_json(silent=True) or request.form
+    filename = clean_filename(data.get("filename", ""))
+    password = data.get("password", "")
+
+    if password != ADMIN_PASSWORD:
+        return jsonify({"ok": False, "message": "비밀번호가 올바르지 않습니다."}), 403
+
+    if not filename or not is_pdf(filename):
+        return jsonify({"ok": False, "message": "삭제할 문서를 찾을 수 없습니다."}), 400
+
+    target_path = upload_path(filename)
+    if not is_safe_upload_path(target_path) or not os.path.exists(target_path):
+        return jsonify({"ok": False, "message": "삭제할 문서를 찾을 수 없습니다."}), 404
+
+    os.remove(target_path)
+    return jsonify({"ok": True})
 
 
 @app.route("/uploads/<filename>")

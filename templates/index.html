@@ -265,6 +265,13 @@
 
     .file-item + .file-item { margin-top: 8px; }
 
+    .file-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 6px;
+    }
+
     .file-link {
       width: 100%;
       border: 1px solid transparent;
@@ -280,9 +287,28 @@
       transition: background .16s ease, border-color .16s ease;
     }
 
+    .delete-button {
+      width: 44px;
+      height: 44px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: #b91c1c;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      transition: background .16s ease, border-color .16s ease;
+    }
+
     .file-link:hover {
       background: var(--primary-soft);
       border-color: #bdd2ff;
+    }
+
+    .delete-button:hover {
+      background: #fee2e2;
+      border-color: #fecaca;
     }
 
     .file-icon {
@@ -637,6 +663,50 @@
       renderDocument(filename);
     }
 
+    function loadFiles() {
+      return fetch("/api/files")
+        .then(function (response) {
+          if (!response.ok) throw new Error("파일 목록을 불러오지 못했습니다.");
+          return response.json();
+        })
+        .then(function (data) {
+          renderFileList(data.files || []);
+        })
+        .catch(function () {
+          renderFileList([]);
+        });
+    }
+
+    function deleteDocument(filename) {
+      const password = window.prompt("삭제 비밀번호를 입력해 주세요.");
+      if (password === null) return;
+
+      if (!window.confirm("선택한 문서를 삭제할까요?")) return;
+
+      fetch("/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: filename, password: password })
+      })
+        .then(function (response) {
+          return response.json().then(function (data) {
+            if (!response.ok || !data.ok) {
+              throw new Error(data.message || "삭제하지 못했습니다.");
+            }
+            return data;
+          });
+        })
+        .then(function () {
+          if (activeFilename === filename) {
+            showEmptyViewer();
+          }
+          return loadFiles();
+        })
+        .catch(function (error) {
+          alert(error.message || "삭제하지 못했습니다.");
+        });
+    }
+
     zoomOutButton.addEventListener("click", function () {
       if (!activeFilename) return;
       zoomScale = Math.max(0.6, Math.round((zoomScale - 0.1) * 10) / 10);
@@ -668,13 +738,20 @@
       emptyMessage.style.display = "none";
       files.forEach(function (filename) {
         const item = document.createElement("li");
+        const row = document.createElement("div");
         const button = document.createElement("button");
+        const deleteButton = document.createElement("button");
         const icon = document.createElement("span");
         const text = document.createElement("span");
 
         item.className = "file-item";
+        row.className = "file-row";
         button.className = "file-link";
         button.type = "button";
+        deleteButton.className = "delete-button";
+        deleteButton.type = "button";
+        deleteButton.textContent = "삭제";
+        deleteButton.setAttribute("aria-label", filename + " 삭제");
         icon.className = "file-icon";
         icon.textContent = "문서";
         text.className = "file-text";
@@ -683,27 +760,22 @@
         button.addEventListener("click", function () {
           viewDocument(filename);
         });
+        deleteButton.addEventListener("click", function () {
+          deleteDocument(filename);
+        });
 
         button.appendChild(icon);
         button.appendChild(text);
-        item.appendChild(button);
+        row.appendChild(button);
+        row.appendChild(deleteButton);
+        item.appendChild(row);
         list.appendChild(item);
       });
 
       viewDocument(files[0]);
     }
 
-    fetch("/api/files")
-      .then(function (response) {
-        if (!response.ok) throw new Error("파일 목록을 불러오지 못했습니다.");
-        return response.json();
-      })
-      .then(function (data) {
-        renderFileList(data.files || []);
-      })
-      .catch(function () {
-        renderFileList([]);
-      });
+    loadFiles();
   </script>
 </body>
 </html>
