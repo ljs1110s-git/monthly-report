@@ -46,8 +46,12 @@ def get_report_files():
     if not os.path.exists(app.config["UPLOAD_FOLDER"]):
         return []
 
+    report_files = [
+        filename for filename in os.listdir(app.config["UPLOAD_FOLDER"]) if is_pdf(filename)
+    ]
     return sorted(
-        [filename for filename in os.listdir(app.config["UPLOAD_FOLDER"]) if is_pdf(filename)],
+        report_files,
+        key=lambda filename: (os.path.getmtime(upload_path(filename)), filename),
         reverse=True,
     )
 
