@@ -265,6 +265,25 @@
 
     .file-item + .file-item { margin-top: 8px; }
 
+    .year-group summary {
+      cursor: pointer;
+      padding: 12px 8px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .year-files { list-style: none; margin: 0; padding: 0; }
+    .period-button {
+      margin: 0 10px 8px 54px; border: 1px solid var(--line); border-radius: 6px;
+      background: #fff; color: var(--primary); padding: 5px 8px; cursor: pointer;
+    }
+    .period-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .period-fields label { display: grid; gap: 6px; font-size: 13px; }
+    .period-fields input, .period-fields select {
+      width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--line);
+      border-radius: 8px; background: #fff; font: inherit;
+    }
+
     .file-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -512,10 +531,23 @@
                 <span class="selected-file" id="selectedFileName">선택된 파일 없음</span>
               </label>
               <input type="file" id="reportFile" name="files" accept=".pdf" multiple required>
+              <div class="period-fields">
+                <label>보고서 연도
+                  <input type="number" name="year" min="2026" max="9999" value="{{ current_year }}" required>
+                </label>
+                <label>보고서 월
+                  <select name="month" required>
+                    <option value="">월 선택</option>
+                    {% for month in range(1, 13) %}
+                    <option value="{{ month }}">{{ month }}월</option>
+                    {% endfor %}
+                  </select>
+                </label>
+              </div>
               <input type="password" id="passwordInput" placeholder="비밀번호" required>
               <button class="upload-button" type="submit">업로드</button>
             </form>
-            <p class="info-text">문서 파일을 여러 개 선택해 한 번에 업로드할 수 있습니다. 최대 100MB까지 지원합니다.</p>
+            <p class="info-text">선택한 연도·월의 보고서를 업로드합니다. 여러 파일을 선택하면 모두 같은 연도·월로 등록됩니다. 최대 100MB까지 지원합니다.</p>
           </div>
         </section>
       </aside>
@@ -671,7 +703,7 @@
           return response.json();
         })
         .then(function (data) {
-          renderFileList(data.files || []);
+          renderFileList(data.reports || (data.files || []).map(filename => ({filename, year: null, month: null})));
         })
         .catch(function () {
           renderFileList([]);
@@ -722,22 +754,56 @@
       renderDocument(activeFilename);
     });
 
-    function renderFileList(files) {
+    async function changeReportPeriod(report) {
+      const year = prompt("보고서 연도 (2026년부터)", report.year || new Date().getFullYear());
+      if (year === null) return;
+      const month = prompt("보고서 월 (1~12)", report.month || "");
+      if (month === null) return;
+      const password = prompt("관리자 비밀번호를 입력해 주세요.");
+      if (password === null) return;
+      try {
+        const response = await fetch("/api/report-period", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({filename: report.filename, year, month, password})
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "분류를 변경하지 못했습니다.");
+        await loadFiles();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    function renderFileList(reports) {
       const list = document.getElementById("fileList");
       const emptyMessage = document.getElementById("emptyFileMessage");
       const documentCount = document.getElementById("documentCount");
 
       list.innerHTML = "";
-      documentCount.textContent = "문서 " + files.length + "건";
+      documentCount.textContent = "문서 " + reports.length + "건";
 
-      if (!files.length) {
-        emptyMessage.style.display = "block";
-        showEmptyViewer();
-        return;
-      }
-
-      emptyMessage.style.display = "none";
-      files.forEach(function (filename) {
+      emptyMessage.style.display = reports.length ? "none" : "block";
+      const years = [...new Set([2026, ...reports.filter(report => report.year).map(report => report.year)])].sort((a, b) => b - a);
+      if (reports.some(report => !report.year)) years.push(null);
+      const groups = new Map();
+      years.forEach(function (year, index) {
+        const item = document.createElement("li");
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        const groupList = document.createElement("ul");
+        const count = reports.filter(report => report.year === year).length;
+        details.className = "year-group";
+        details.open = index === 0 || year === null;
+        summary.textContent = (year ? year + "년" : "연도·월 미확인") + " · " + count + "건";
+        groupList.className = "year-files";
+        details.append(summary, groupList);
+        item.appendChild(details);
+        list.appendChild(item);
+        groups.set(year, groupList);
+      });
+      reports.forEach(function (report) {
+        const filename = report.filename;
         const item = document.createElement("li");
         const row = document.createElement("div");
         const button = document.createElement("button");
@@ -756,7 +822,9 @@
         icon.className = "file-icon";
         icon.textContent = "문서";
         text.className = "file-text";
-        text.textContent = filename;
+        text.textContent = report.month ? report.month + "월 보고서" : filename;
+        button.title = filename;
+        button.setAttribute("aria-label", (report.year ? report.year + "년 " + report.month + "월 보고서: " : "") + filename);
 
         button.addEventListener("click", function () {
           viewDocument(filename);
@@ -770,10 +838,18 @@
         row.appendChild(button);
         row.appendChild(deleteButton);
         item.appendChild(row);
-        list.appendChild(item);
+        const periodButton = document.createElement("button");
+        periodButton.type = "button";
+        periodButton.className = "period-button";
+        periodButton.textContent = report.year ? "연도·월 수정" : "연도·월 등록";
+        periodButton.setAttribute("aria-label", filename + " 연도·월 수정");
+        periodButton.addEventListener("click", () => changeReportPeriod(report));
+        item.appendChild(periodButton);
+        groups.get(report.year).appendChild(item);
       });
 
-      viewDocument(files[0]);
+      if (reports.length) viewDocument(reports[0].filename);
+      else showEmptyViewer();
     }
 
     loadFiles();
